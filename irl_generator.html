@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRL Generator | B Capital Group</title>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --surface: #151828;
+      --surface2: #1c2035;
+      --border: #252a45;
+      --accent: #4f6ef7;
+      --accent-light: #6b84f8;
+      --text: #e2e6f3;
+      --text-muted: #7d89b0;
+      --text-dim: #4a5278;
+      --success: #22d3a5;
+      --error: #f05252;
+      --warning: #f5a623;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 320px;
+      min-width: 320px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    /* Main */
+    .main {
+      flex: 1;
+      padding: 32px 40px;
+      overflow-y: auto;
+    }
+    /* Header */
+    .header {
+      margin-bottom: 28px;
+    }
+    .header-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+    .header p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    /* Section labels */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+    /* Fields */
+    .field { margin-bottom: 14px; }
+    label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input, select, textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 8px 11px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.12);
+    }
+    input[type="password"] { letter-spacing: 0.08em; }
+    select option { background: #1c2035; }
+    textarea { resize: vertical; min-height: 80px; }
+    .key-hint {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+    /* Two-col grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    /* Checkboxes */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding: 5px 8px;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer;
+      transition: border-color 0.1s, background 0.1s;
+    }
+    .check-item:hover { border-color: var(--accent); background: rgba(79,110,247,0.04); }
+    .check-item input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--accent);
+      flex-shrink: 0;
+    }
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+    /* Generate button */
+    .btn-generate {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-generate:hover { background: var(--accent-light); }
+    .btn-generate:active { transform: scale(0.99); }
+    .btn-generate:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    /* Secondary button */
+    .btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 7px 14px;
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s, background 0.12s;
+      font-family: inherit;
+    }
+    .btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(79,110,247,0.06); }
+    /* Status */
+    .status-bar {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-bar.show { display: flex; }
+    .status-loading { background: rgba(79,110,247,0.1); border: 1px solid rgba(79,110,247,0.25); color: var(--accent-light); }
+    .status-error { background: rgba(240,82,82,0.1); border: 1px solid rgba(240,82,82,0.25); color: var(--error); }
+    .status-success { background: rgba(34,211,165,0.08); border: 1px solid rgba(34,211,165,0.2); color: var(--success); }
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(79,110,247,0.25);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Output area */
+    .output-panel {
+      display: none;
+    }
+    .output-panel.show { display: block; }
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .output-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .output-actions { display: flex; gap: 8px; }
+    .irl-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 28px 32px;
+      min-height: 300px;
+      line-height: 1.75;
+    }
+    .irl-box h2 {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 24px;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .irl-box h2:first-child { margin-top: 0; }
+    .irl-box ol {
+      padding-left: 22px;
+    }
+    .irl-box li {
+      margin-bottom: 9px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .irl-box p {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    /* Welcome state */
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+      gap: 12px;
+      color: var(--text-dim);
+    }
+    .welcome-icon {
+      font-size: 40px;
+      margin-bottom: 4px;
+      opacity: 0.4;
+    }
+    .welcome h3 { font-size: 16px; color: var(--text-muted); font-weight: 500; }
+    .welcome p { font-size: 13px; max-width: 340px; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- Sidebar: all inputs -->
+    <div class="sidebar">
+      <div class="header">
+        <div class="header-tag">B Capital Group</div>
+        <h1>IRL Generator</h1>
+        <p>Draft information request lists after dataroom review</p>
+      </div>
+
+      <!-- API Key -->
+      <div>
+        <div class="section-label">API Settings</div>
+        <div class="field">
+          <label>Anthropic API Key</label>
+          <input type="password" id="apiKey" placeholder="sk-ant-..." spellcheck="false">
+          <div class="key-hint">Saved locally in your browser. Used only to call Anthropic's API.</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Company -->
+      <div>
+        <div class="section-label">Company Details</div>
+        <div class="field">
+          <label>Company Name</label>
+          <input type="text" id="company" placeholder="e.g. Amber Electric">
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Stage</label>
+            <select id="stage">
+              <option value="">Select...</option>
+              <option>Pre-Seed</option>
+              <option>Seed</option>
+              <option>Series A</option>
+              <option>Series B</option>
+              <option>Series C</option>
+              <option>Series D+</option>
+              <option>Growth</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Sector</label>
+            <input type="text" id="sector" placeholder="e.g. CleanTech">
+          </div>
+        </div>
+        <div class="field">
+          <label>Business Model</label>
+          <select id="bizmodel">
+            <option value="">Select...</option>
+            <option>SaaS / Subscription</option>
+            <option>Marketplace</option>
+            <option>Consumer App</option>
+            <option>Enterprise Software</option>
+            <option>Licensing / Royalty</option>
+            <option>Transactional / GMV</option>
+            <option>Hardware + Software</option>
+            <option>Energy / Utility</option>
+            <option>FinTech / Payments</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Round Size (if known)</label>
+          <input type="text" id="roundsize" placeholder="e.g. $50M USD">
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Dataroom -->
+      <div>
+        <div class="section-label">What Was in the Dataroom?</div>
+        <div class="checkbox-grid" id="drChecks">
+          <label class="check-item"><input type="checkbox" value="Pitch deck"> Pitch deck</label>
+          <label class="check-item"><input type="checkbox" value="Financial model"> Financial model</label>
+          <label class="check-item"><input type="checkbox" value="Customer cohort data"> Cohort data</label>
+          <label class="check-item"><input type="checkbox" value="Cap table"> Cap table</label>
+          <label class="check-item"><input type="checkbox" value="Operating metrics / KPIs"> Metrics / KPIs</label>
+          <label class="check-item"><input type="checkbox" value="Contracts / Agreements"> Contracts</label>
+          <label class="check-item"><input type="checkbox" value="Team bios"> Team bios</label>
+          <label class="check-item"><input type="checkbox" value="Corporate structure"> Corp structure</label>
+          <label class="check-item"><input type="checkbox" value="FAQs document"> FAQs doc</label>
+          <label class="check-item"><input type="checkbox" value="Investor presentations"> Investor decks</label>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <label>Additional / Notes on Contents</label>
+          <textarea id="drNotes" style="min-height:60px" placeholder="e.g. Had a detailed model but no cohort breakdown. FAQs answered basic questions but no third-party contracts..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Observations -->
+      <div>
+        <div class="section-label">Your Observations</div>
+        <div class="field">
+          <label>Key findings & areas to probe</label>
+          <textarea id="obs" style="min-height:110px" placeholder="e.g. Revenue growth strong at 130% LTM but non-device customer churn looks high at 38% year-1. International licensing business has only 1 live partnership despite 5 signed. Deck claims 70% market share in Australia but no third-party source cited. Financial model assumes $50m raise in Q3 but no burn analysis shown..."></textarea>
+        </div>
+        <div class="field">
+          <label>What was missing from the dataroom?</label>
+          <textarea id="missing" style="min-height:60px" placeholder="e.g. No audited financials. No org chart or headcount breakdown. No detail on UK partnership traction post-launch..."></textarea>
+        </div>
+        <div class="field">
+          <label>Specific claims needing verification</label>
+          <textarea id="claims" style="min-height:60px" placeholder="e.g. Claims 10x LTV/CAC. Claims 12-month payback. Deck states 5 international utility contracts signed..."></textarea>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="statusBar" class="status-bar"></div>
+
+      <button class="btn-generate" id="genBtn" onclick="generateIRL()">
+        <span id="btnIcon">→</span>
+        <span id="btnText">Generate IRL</span>
+      </button>
+    </div>
+
+    <!-- Main: output -->
+    <div class="main">
+      <div class="welcome" id="welcomeState">
+        <div class="welcome-icon">📋</div>
+        <h3>IRL Generator</h3>
+        <p>Fill in the company details and your dataroom observations on the left, then click Generate IRL to produce a structured draft in B Capital's style.</p>
+      </div>
+
+      <div class="output-panel" id="outputPanel">
+        <div class="output-header">
+          <div class="output-title" id="outputTitle">IRL Draft</div>
+          <div class="output-actions">
+            <button class="btn" onclick="copyIRL()">Copy text</button>
+            <button class="btn" onclick="downloadIRL()">Download .txt</button>
+          </div>
+        </div>
+        <div class="irl-box" id="irlBox"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Persistence ---
+    window.onload = () => {
+      const saved = localStorage.getItem('bcap_api_key');
+      if (saved) document.getElementById('apiKey').value = saved;
+    };
+
+    // --- UI helpers ---
+    function setStatus(msg, type) {
+      const bar = document.getElementById('statusBar');
+      bar.className = 'status-bar show status-' + type;
+      bar.innerHTML = type === 'loading'
+        ? `<div class="spinner"></div><span>${msg}</span>`
+        : `<span>${msg}</span>`;
+    }
+    function clearStatus() {
+      document.getElementById('statusBar').className = 'status-bar';
+    }
+
+    function getChecked() {
+      return Array.from(document.querySelectorAll('#drChecks input:checked')).map(c => c.value);
+    }
+
+    // --- IRL generation ---
+    async function generateIRL() {
+      const apiKey = document.getElementById('apiKey').value.trim();
+      const company = document.getElementById('company').value.trim();
+      const stage = document.getElementById('stage').value;
+      const sector = document.getElementById('sector').value.trim();
+      const bizmodel = document.getElementById('bizmodel').value;
+      const roundsize = document.getElementById('roundsize').value.trim();
+      const drChecked = getChecked();
+      const drNotes = document.getElementById('drNotes').value.trim();
+      const obs = document.getElementById('obs').value.trim();
+      const missing = document.getElementById('missing').value.trim();
+      const claims = document.getElementById('claims').value.trim();
+
+      if (!apiKey) { setStatus('Please enter your Anthropic API key.', 'error'); return; }
+      if (!company) { setStatus('Please enter the company name.', 'error'); return; }
+      if (!obs) { setStatus('Please add your observations — this is the core input for a good IRL.', 'error'); return; }
+
+      localStorage.setItem('bcap_api_key', apiKey);
+
+      const btn = document.getElementById('genBtn');
+      btn.disabled = true;
+      document.getElementById('btnIcon').innerHTML = '';
+      document.getElementById('btnText').textContent = 'Generating...';
+      setStatus('Drafting your IRL with Claude Opus 4.8...', 'loading');
+      document.getElementById('welcomeState').style.display = 'none';
+      document.getElementById('outputPanel').className = 'output-panel';
+
+      const droomContext = [
+        drChecked.length ? `Documents present: ${drChecked.join(', ')}` : '',
+        drNotes ? `Additional notes: ${drNotes}` : ''
+      ].filter(Boolean).join('\n');
+
+      const systemPrompt = `You are a senior associate at B Capital Group, a global venture capital firm. You are drafting an Information Request List (IRL) to send to a pipeline company after reviewing their data room.
+
+B Capital IRL style and format:
+- Organized into 8-12 thematic categories, each with an ALL-CAPS BOLD header like: **BUSINESS MODEL & REVENUE**
+- 3-6 specific, pointed questions per category, numbered within each section
+- Questions are direct and professional: "Can you explain...", "Please provide...", "Please walk us through...", "Can you share...", "What is your thinking on...", "How should investors think about..."
+- Questions reference specific claims from materials OR probe specific gaps/inconsistencies the investor flagged
+- Mix of: (1) clarification/conceptual questions, (2) requests for specific data/documents, (3) verification of key claims, (4) probing risks or weaknesses
+- Financial questions often reference specific line items, model assumptions, or metric definitions
+- Tone is professional and collaborative — the IRL is meant to advance the deal, not challenge adversarially
+
+Standard categories to include as relevant to this company:
+**BUSINESS MODEL & REVENUE** — how the company makes money, revenue quality, mix
+**MARKET OPPORTUNITY & COMPETITIVE DYNAMICS** — market structure, right to win, competitive moat
+**PRODUCT & TECHNOLOGY** — differentiation, tech IP, product roadmap
+**UNIT ECONOMICS** — CAC, LTV, payback period, gross/contribution margins
+**FINANCIAL PERFORMANCE** — historical growth, burn, revenue quality
+**CUSTOMER METRICS** — cohorts, retention, churn, NRR/NDR
+**KEY COMMERCIAL PARTNERSHIPS** — named partnerships, pipeline, commercial terms
+**CAPITAL STRUCTURE & FUNDRAISING** — cap table, funding history, current round structure
+**TEAM & ORGANIZATION** — key person risk, bench strength, hiring plans
+**BURN & PROFITABILITY** — burn rate, path to profitability, use of proceeds
+**GO-TO-MARKET STRATEGY** — distribution channels, sales motion, growth levers
+**ADDITIONAL INFORMATION REQUESTED** — missing documents, specific data requests, follow-on materials
+
+Output format:
+**CATEGORY NAME**
+1. First question
+2. Second question
+...
+
+Start directly with the first category header. No preamble, no summary, no closing remarks. Write ONLY the IRL.`;
+
+      const userMsg = `Draft an IRL for the following company:
+
+**Company:** ${company}
+**Stage:** ${stage || 'Not specified'}
+**Sector:** ${sector || 'Not specified'}
+**Business Model:** ${bizmodel || 'Not specified'}
+${roundsize ? `**Round Size:** ${roundsize}` : ''}
+
+**DATAROOM CONTENTS:**
+${droomContext || 'Not specified'}
+
+**MY OBSERVATIONS & AREAS TO PROBE:**
+${obs}
+${missing ? `\n**WHAT WAS MISSING FROM THE DATAROOM:**\n${missing}` : ''}
+${claims ? `\n**SPECIFIC CLAIMS NEEDING VERIFICATION:**\n${claims}` : ''}
+
+Please draft a comprehensive, deal-ready IRL.`;
+
+      try {
+        const resp = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true'
+          },
+          body: JSON.stringify({
+            model: 'claude-opus-4-8',
+            max_tokens: 4096,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: userMsg }]
+          })
+        });
+
+        if (!resp.ok) {
+          let errMsg = `API error ${resp.status}`;
+          try { const e = await resp.json(); errMsg = e.error?.message || errMsg; } catch {}
+          throw new Error(errMsg);
+        }
+
+        const data = await resp.json();
+        const irlText = data.content[0].text;
+
+        renderIRL(company, stage, irlText);
+        setStatus('IRL generated successfully.', 'success');
+        document.getElementById('outputPanel').className = 'output-panel show';
+
+      } catch (err) {
+        console.error(err);
+        const msg = err.message || 'Unknown error';
+        if (msg.toLowerCase().includes('cors') || msg.toLowerCase().includes('network') || msg.toLowerCase().includes('fetch')) {
+          setStatus('Network/CORS error. If this persists, see the fallback instructions below.', 'error');
+          showFallback(systemPrompt, userMsg);
+        } else {
+          setStatus(`Error: ${msg}`, 'error');
+        }
+      } finally {
+        btn.disabled = false;
+        document.getElementById('btnIcon').textContent = '→';
+        document.getElementById('btnText').textContent = 'Generate IRL';
+      }
+    }
+
+    // --- Render IRL output ---
+    function renderIRL(company, stage, text) {
+      document.getElementById('outputTitle').textContent =
+        `${company} IRL${stage ? ' — ' + stage : ''}`;
+
+      // Store raw for copy/download
+      document.getElementById('irlBox').dataset.raw = text;
+      document.getElementById('irlBox').dataset.company = company;
+
+      // Parse markdown to HTML
+      const lines = text.split('\n');
+      let html = '';
+      let inList = false;
+
+      for (const line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          if (inList) { html += '</ol>'; inList = false; }
+          continue;
+        }
+        // Bold headers: **TEXT** on its own line
+        if (/^\*\*[^*]+\*\*\s*$/.test(trimmed)) {
+          if (inList) { html += '</ol>'; inList = false; }
+          const headerText = trimmed.replace(/^\*\*/, '').replace(/\*\*$/, '').trim();
+          html += `<h2>${headerText}</h2>`;
+          continue;
+        }
+        // Numbered items: starts with digit + period
+        const listMatch = trimmed.match(/^(\d+)\.\s+(.+)$/);
+        if (listMatch) {
+          if (!inList) { html += '<ol>'; inList = true; }
+          html += `<li>${listMatch[2]}</li>`;
+          continue;
+        }
+        // Regular paragraph
+        if (inList) { html += '</ol>'; inList = false; }
+        html += `<p>${trimmed}</p>`;
+      }
+      if (inList) html += '</ol>';
+
+      document.getElementById('irlBox').innerHTML = html;
+      document.getElementById('irlBox').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // --- Fallback: show prompt to paste into Claude ---
+    function showFallback(systemPrompt, userMsg) {
+      document.getElementById('welcomeState').style.display = 'none';
+      document.getElementById('outputPanel').className = 'output-panel show';
+      document.getElementById('outputTitle').textContent = 'Fallback: Paste into Claude';
+      const combined = `SYSTEM:\n${systemPrompt}\n\n---\n\nUSER:\n${userMsg}`;
+      document.getElementById('irlBox').dataset.raw = combined;
+      document.getElementById('irlBox').innerHTML = `
+        <p style="color:var(--warning);margin-bottom:12px">⚠ Direct API call failed (CORS or network issue). Copy the prompt below and paste it into <a href="https://claude.ai" target="_blank" style="color:var(--accent)">claude.ai</a> to generate your IRL.</p>
+        <pre style="font-size:12px;white-space:pre-wrap;word-break:break-word;color:var(--text-muted);background:var(--bg);padding:16px;border-radius:7px;border:1px solid var(--border)">${escHtml(combined)}</pre>`;
+    }
+
+    function escHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // --- Copy / Download ---
+    function copyIRL() {
+      const raw = document.getElementById('irlBox').dataset.raw;
+      if (!raw) return;
+      navigator.clipboard.writeText(raw).then(() => {
+        setStatus('Copied to clipboard!', 'success');
+      }).catch(() => {
+        // fallback select
+        const ta = document.createElement('textarea');
+        ta.value = raw;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        setStatus('Copied to clipboard!', 'success');
+      });
+    }
+
+    function downloadIRL() {
+      const raw = document.getElementById('irlBox').dataset.raw;
+      const company = document.getElementById('irlBox').dataset.company || 'Company';
+      if (!raw) return;
+      const date = new Date().toISOString().slice(0,10).replace(/-/g,'');
+      const filename = `${date} ${company} IRL v1.txt`;
+      const blob = new Blob([raw], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+  </script>
+</body>
+</html>
