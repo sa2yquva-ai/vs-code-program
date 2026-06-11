@@ -23,7 +23,9 @@ Each game is a **single HTML file** with inline CSS and vanilla JavaScript — n
 
 ## Git Workflow
 
-Every change must be committed and pushed:
+**After every piece of work — no exceptions — commit and push immediately.** Never leave completed work uncommitted. This ensures we always have a saved version on GitHub and can revert to any previous state if something breaks.
+
+Steps after each change:
 ```
 git add <files>
 git commit -m "<type>: <short description>"
@@ -31,5 +33,7 @@ git push
 ```
 
 Commit message types: `feat` (new feature), `fix` (bug fix), `style` (visual/CSS only), `refactor` (restructure without behavior change).
+
+Commit granularity: one logical change per commit. If adding a feature and fixing a bug in the same session, make two separate commits — not one combined commit.
 
 Remote: `https://github.com/sa2yquva-ai/vs-code-program`
